@@ -1,24 +1,16 @@
-/*
- * This ESP8266 NodeMCU code was developed by newbiely.com
- *
- * This ESP8266 NodeMCU code is made available for public use without any restriction
- *
- * For comprehensive instructions and wiring diagrams, please visit:
- * https://newbiely.com/tutorials/esp8266/esp8266-websocket
- */
-
+//on inclue les library necessaire on bon fonctionnement du projet
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include "index.h"
 
+//difinition du réseaux et du mot de passe
 const char* ssid = "iPhone de vultorio";     
-const char* password = "0987654321";  
-
-//pin sur l'entrée 1 du pont en H (recule moteur droit)
-int IN1 = 13;
+const char* password = "";  
 
 //pin sur l'entrée 2 du pont en H (avance moteur droit)
 int IN2 = 12;
+
+//pin sur l'entrée 1 du pont en H (recule moteur droit)
+int IN1 = 13;
 
 //pin sur l'entrée 3 du pont en H (avance moteur gauche)
 int IN3 = 14;
@@ -29,14 +21,18 @@ int IN4 = 15;
 int sensorDroite = D1; // Broche du premier capteur de ligne situé à droite
 int sensorGauche = D2; // Broche du deuxième capteur de ligne situé à gauche
 
+//variable qui définie si le robot doit avancé ou non
 boolean isActive = false;
 
+//on créer le server web sur le port 80
 ESP8266WebServer server(80);
 
 void setup() {
+
+  //on ititialise le port série
   Serial.begin(115200);
 
-    //on initialise les entrée et sortie
+  //on initialise les entrée et sortie
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
@@ -44,20 +40,21 @@ void setup() {
   pinMode(sensorDroite, INPUT);
   pinMode(sensorGauche, INPUT);
 
+  //pour être sur que le robot n'avance pas lors de la connection
   stop();
   
-  // Connect to Wi-Fi
+  // Connection au Wi-Fi
   connectToWiFi();
 
-  // Define web server routes
+  //on définie les différente action en fonction des types de requêtes
   server.on("/", HTTP_GET, handleRoot);
-  server.on("/start", HTTP_GET, handleStart);
-  server.on("/stop", HTTP_GET, handleStop);
+  //server.on("/start", HTTP_GET, handleStart);
+  //server.on("/stop", HTTP_GET, handleStop);
 
-  // Start server
+  // on démarre le server
   server.begin();
-  Serial.println("HTTP server started");
-  Serial.println(WiFi.localIP());
+  Serial.println("server démarrer");
+  Serial.println("l'ip du rebot suiveur de ligne est " + WiFi.localIP());
 }
 
 void loop() {
