@@ -2,6 +2,7 @@
 
 #include "Ultrasonic.h"
 
+//trig et echo
 Ultrasonic ultrasonicForward(9, 8);
 Ultrasonic ultrasonicRight(12, 13);
 
@@ -34,6 +35,7 @@ void setup() {
  
   rouedroite.attach(5);
   rouegauche.attach(6);
+  servoDirection.attach(10);
   rouedroite.writeMicroseconds(arret);   
   rouegauche.writeMicroseconds(arret);
  
@@ -160,4 +162,3 @@ void stop()
   rouedroite.writeMicroseconds(1500);   
   rouegauche.writeMicroseconds(1500);
 }
-
