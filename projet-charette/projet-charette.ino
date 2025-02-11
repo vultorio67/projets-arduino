@@ -2,6 +2,8 @@
 
 #include "Ultrasonic.h"
 
+//prb de direction quand le robot detecte devant mais rien à gauche
+
 //trig et echo
 Ultrasonic ultrasonicForward(9, 8);
 Ultrasonic ultrasonicRight(12, 13);
@@ -13,9 +15,9 @@ Servo rouegauche;
 //captor
 Servo servoDirection;
 
-const int fowardThreshold = 7;
-const int rightThresholdMin = 3;
-const int rightThresholdMax = 5;
+const int fowardThreshold = 8;
+const int rightThresholdMin = 8;
+const int rightThresholdMax = 11;
  
 int arret = 1500;
 
@@ -58,11 +60,11 @@ void loop() {
   if(isRight)
   {
     //à voir pour l'angle
-    servoDirection.write(180);
+    servoDirection.write(0);
   }
   else 
   {
-    servoDirection.write(0);
+    servoDirection.write(180);
   }
 
   delay(200);
@@ -87,6 +89,44 @@ void condition()
     }
     else {
       turnRightSelf();
+    }
+
+    delay(500);
+  }
+
+  else if (distanceForwardSensor > fowardThreshold && distanceLateralSensor > rightThresholdMax)
+  {
+    if(isRight)
+    {
+      turnRight();
+    }
+    else
+    {
+      turnLeft();
+    }
+  }
+
+  else if (distanceForwardSensor < fowardThreshold && distanceLateralSensor > rightThresholdMax)
+  {
+    if(isRight)
+    {
+      turnRightSelf();
+    }
+    else
+    {
+      turnLeftSelf();
+    }
+  }
+
+  else if(distanceLateralSensor < rightThresholdMin)
+  {
+    if(isRight)
+    {
+      turnLeft();
+    }
+    else
+    {
+      turnRight();
     }
   }
 
@@ -126,35 +166,32 @@ void forward() {
 //One wheel stoped
 void turnRight()
 {
-  rouedroite.writeMicroseconds(1500);   
-  rouegauche.writeMicroseconds(1300);
+  rouedroite.writeMicroseconds(1475);   
+  rouegauche.writeMicroseconds(1700);
 }
 
 //One wheel stoped
 void turnLeft()
 {
-  rouedroite.writeMicroseconds(1700);   
-  rouegauche.writeMicroseconds(1500);
+  rouedroite.writeMicroseconds(1300);   
+  rouegauche.writeMicroseconds(1525);
 }
 
 //turn on it self
 void turnRightSelf()
 {
-  rouedroite.writeMicroseconds(1300);   
-  rouegauche.writeMicroseconds(1300);
+  rouedroite.writeMicroseconds(1700);   
+  rouegauche.writeMicroseconds(1700);
 
   //TODO
-  delay(100);
 }
 
 //turn on it self
 void turnLeftSelf()
 {
-  rouedroite.writeMicroseconds(1700);   
-  rouegauche.writeMicroseconds(1700);
+  rouedroite.writeMicroseconds(1300);   
+  rouegauche.writeMicroseconds(1300);
 
-  //TODO
-  delay(100);
 }
 
 void stop()
