@@ -16,8 +16,9 @@ Servo rouegauche;
 Servo servoDirection;
 
 const int fowardThreshold = 8;
-const int rightThresholdMin = 8;
-const int rightThresholdMax = 11;
+const int rightThresholdMin = 6;
+const int rightThresholdMax = 9;
+const int rightThresholdRotation = 15;
  
 int arret = 1500;
 
@@ -29,6 +30,8 @@ int distanceForwardSensor;
 
 ////// à déterminer comment 
 bool isRight = true;
+
+bool isStart;
  
  
 void setup() {
@@ -37,9 +40,11 @@ void setup() {
  
   rouedroite.attach(5);
   rouegauche.attach(6);
-  servoDirection.attach(10);
+
   rouedroite.writeMicroseconds(arret);   
   rouegauche.writeMicroseconds(arret);
+
+  pinMode(2, INPUT_PULLUP);
  
 }
 
@@ -47,25 +52,22 @@ void loop() {
 
   readDisance();
 
-  condition();
-
-  Serial.print("Distance forward = ");
-  Serial.print(distanceForwardSensor); // Distance will be 0 when out of set max range.
-  Serial.println(" cm");
-
-  Serial.print("Distance right = ");
-  Serial.print(distanceLateralSensor); // Distance will be 0 when out of set max range.
-  Serial.println(" cm");
-
-  if(isRight)
+  if(digitalRead(2) == true)
   {
-    //à voir pour l'angle
-    servoDirection.write(0);
+    isStart = !isStart;
+    Serial.println("the robot is moving now !!!");
+    delay(200);
   }
-  else 
+
+  if(isStart)
   {
-    servoDirection.write(180);
+    condition();
   }
+  else {
+    stop();
+  }
+
+  printInfo();
 
   delay(200);
 
@@ -90,10 +92,9 @@ void condition()
     else {
       turnRightSelf();
     }
-
-    delay(500);
   }
 
+  //if no wall detected
   else if (distanceForwardSensor > fowardThreshold && distanceLateralSensor > rightThresholdMax)
   {
     if(isRight)
@@ -106,7 +107,8 @@ void condition()
     }
   }
 
-  else if (distanceForwardSensor < fowardThreshold && distanceLateralSensor > rightThresholdMax)
+  //if wall in front and no wall on side
+  else if (distanceForwardSensor < fowardThreshold && distanceLateralSensor > rightThresholdRotation)
   {
     if(isRight)
     {
@@ -118,6 +120,7 @@ void condition()
     }
   }
 
+  //if too close to the side wall
   else if(distanceLateralSensor < rightThresholdMin)
   {
     if(isRight)
@@ -180,17 +183,21 @@ void turnLeft()
 //turn on it self
 void turnRightSelf()
 {
-  rouedroite.writeMicroseconds(1700);   
-  rouegauche.writeMicroseconds(1700);
-
-  //TODO
+  rouedroite.writeMicroseconds(1600);   
+  rouegauche.writeMicroseconds(1600);
+  delay(400);
+  stop();
+  delay(125);
 }
 
 //turn on it self
 void turnLeftSelf()
 {
-  rouedroite.writeMicroseconds(1300);   
-  rouegauche.writeMicroseconds(1300);
+  rouedroite.writeMicroseconds(1400);   
+  rouegauche.writeMicroseconds(1400);
+  delay(400);
+  stop();
+  delay(125);
 
 }
 
@@ -198,4 +205,15 @@ void stop()
 {
   rouedroite.writeMicroseconds(1500);   
   rouegauche.writeMicroseconds(1500);
+}
+
+
+void printInfo()
+{
+  Serial.print("Distance forward = ");
+  Serial.print(distanceForwardSensor); // Distance will be 0 when out of set max range.
+  Serial.println(" cm");
+  Serial.print("Distance right = ");
+  Serial.print(distanceLateralSensor); // Distance will be 0 when out of set max range.
+  Serial.println(" cm");
 }
