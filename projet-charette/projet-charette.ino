@@ -31,6 +31,9 @@ unsigned long startTime = millis();
 int distanceLateralSensor;
 int distanceForwardSensor;
 
+
+int goBackAndTurnCount = 0;
+
 ////// à déterminer comment 
 bool isRight = true;
 
@@ -75,7 +78,7 @@ void loop() {
 
   printInfo();
 
-  delay(3);
+  delay(1);
 
 
 }
@@ -260,9 +263,24 @@ void turnLeftSelf()
 }
 
 void goBackAndTurn() {
+
   movingMode = 2;
-  rouedroite.writeMicroseconds(1530);   
-  rouegauche.writeMicroseconds(1400);
+
+  //pour tourner dans l'autre sens après un certaint count
+  if(goBackAndTurnCount <= 2)
+  {
+    goBackAndTurnCount = goBackAndTurnCount+1;
+    rouedroite.writeMicroseconds(1530);   
+    rouegauche.writeMicroseconds(1400);
+  }
+
+  else 
+  {
+    goBackAndTurnCount = 0;
+    rouedroite.writeMicroseconds(1600);   
+    rouegauche.writeMicroseconds(1470);
+  }
+
   delay(300);
 }
 
